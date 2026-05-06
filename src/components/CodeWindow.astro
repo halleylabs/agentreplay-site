@@ -1,0 +1,30 @@
+---
+const sdkCode = `import { createHarness } from 'agentreplay'
+
+const harness = createHarness({
+  projectKey: process.env.AGENTREPLAY_PROJECT_KEY,
+  redact: ['pii', 'raw_keys']
+})
+
+const refund = harness.wrapTool(
+  'stripe.refund',
+  refundCustomer
+)`;
+---
+
+<div class="dark-panel relative w-full max-w-full overflow-hidden p-3 md:overflow-visible md:before:absolute md:before:-left-[12%] md:before:bottom-[9%] md:before:top-[14%] md:before:w-32 md:before:rounded-l-[80px] md:before:border md:before:border-r-0 md:before:border-dashed md:before:border-orange/40">
+  <div class="flex min-h-11 items-center gap-5 rounded-lg bg-graphite2 px-3 font-mono text-[11px] text-[#D6D2C9]">
+    <span class="text-orange">SDK</span>
+    <span>CLI</span>
+    <b class="ml-auto text-[#4EE190]">READY</b>
+  </div>
+  <pre class="m-0 mt-2 max-w-full overflow-auto whitespace-pre-wrap break-words rounded-lg bg-[#171A1C] p-5 font-mono text-[11px] leading-7 text-[#D8D2C9] sm:text-[13px]"><code>{sdkCode}</code></pre>
+  <div class="mt-2 grid gap-2">
+    <code class="flex flex-col justify-between gap-2 break-all rounded-lg bg-[#171A1C] px-3 py-3 font-mono text-[11px] text-[#D8D2C9] sm:flex-row sm:gap-4">
+      agentreplay gate traces/billing-bad-run.json <b class="text-[#4EE190]">PASSED 6/6</b>
+    </code>
+    <code class="flex flex-col justify-between gap-2 break-all rounded-lg bg-[#171A1C] px-3 py-3 font-mono text-[11px] text-[#D8D2C9] sm:flex-row sm:gap-4">
+      agentreplay diff bad.json fixed.json <b class="text-[#4EE190]">DIFF 3</b>
+    </code>
+  </div>
+</div>

@@ -1,0 +1,148 @@
+---
+import "../styles/global.css";
+import Button from "../components/Ui.astro";
+
+const repoUrl = "https://github.com/anzal1/agentreplay";
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const traces = [
+  {
+    status: "PASS",
+    tone: "pass",
+    title: "CRM fixed trace",
+    id: "crm-fixed-run.json",
+    project: "crm-agent",
+    checks: "6/6",
+    tools: "2",
+    href: `${repoUrl}/blob/main/traces/crm-fixed-run.json`
+  },
+  {
+    status: "FAIL",
+    tone: "fail",
+    title: "CRM bad trace",
+    id: "crm-bad-run.json",
+    project: "crm-agent",
+    checks: "3 failed",
+    tools: "2",
+    href: `${repoUrl}/blob/main/traces/crm-bad-run.json`
+  },
+  {
+    status: "PASS",
+    tone: "pass",
+    title: "Billing fixed trace",
+    id: "billing-fixed-run.json",
+    project: "billing-ops",
+    checks: "6/6",
+    tools: "4",
+    href: `${repoUrl}/blob/main/traces/billing-fixed-run.json`
+  },
+  {
+    status: "FAIL",
+    tone: "fail",
+    title: "Billing bad trace",
+    id: "billing-bad-run.json",
+    project: "billing-ops",
+    checks: "fails gate",
+    tools: "4",
+    href: `${repoUrl}/blob/main/traces/billing-bad-run.json`
+  }
+];
+
+const commands = [
+  "npm test",
+  "node ./bin/agentreplay.js gate ./traces/crm-bad-run.json",
+  "node ./bin/agentreplay.js gate ./traces/crm-fixed-run.json",
+  "node ./examples/crm-agent-workflow/pilot.js"
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AgentReplay Console Proof</title>
+    <meta
+      name="description"
+      content="A static proof console for AgentReplay traces, gates, SDK conformance, and adversarial CRM results."
+    />
+    <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:opsz@9..40&family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <main class="min-h-screen bg-parchment px-5 py-8 text-ink md:px-8">
+      <header class="mx-auto flex w-full max-w-[1160px] flex-col gap-5 border-b border-line pb-6 md:flex-row md:items-center md:justify-between">
+        <a class="flex items-center gap-2 text-sm font-extrabold" href={base} aria-label="AgentReplay home">
+          <span class="grid size-[23px] rotate-[-12deg] place-items-center rounded-lg bg-orange text-[13px] font-black text-white">A</span>
+          <span>AgentReplay</span>
+        </a>
+        <nav class="flex flex-wrap gap-3 text-xs font-bold text-muted">
+          <a class="rounded-full border border-ink/10 px-4 py-2 transition duration-500 hover:text-orange" href={base}>Landing</a>
+          <a class="rounded-full border border-ink/10 px-4 py-2 transition duration-500 hover:text-orange" href={`${repoUrl}#readme`}>Docs</a>
+          <a class="rounded-full border border-ink/10 px-4 py-2 transition duration-500 hover:text-orange" href={repoUrl}>GitHub</a>
+        </nav>
+      </header>
+
+      <section class="mx-auto grid w-full max-w-[1160px] gap-10 py-16 lg:grid-cols-[0.9fr_1.1fr] lg:py-24">
+        <div>
+          <p class="kicker">Static proof console</p>
+          <h1 class="display-title mb-6 text-[clamp(56px,8vw,118px)] leading-[0.84]">
+            Actual gates. Public traces.
+          </h1>
+          <p class="body-copy">
+            The live package console runs through the CLI server. This static page maps every website action to public proof artifacts in GitHub.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <Button href={`${repoUrl}/tree/main/traces`} label="Open Traces" />
+            <Button href={`${repoUrl}/releases/tag/v0.2.0-alpha.1`} label="Release Results" variant="secondary" />
+          </div>
+        </div>
+
+        <section class="dark-panel p-4 md:p-5" aria-label="Trace gate results">
+          <div class="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4 font-mono text-xs text-white/70">
+            <span>agentreplay gate</span>
+            <span class="chip chip-pass">21/21 tests</span>
+          </div>
+          <div class="grid gap-3">
+            {traces.map((trace) => (
+              <a class="grid gap-3 rounded-lg border border-white/10 bg-white/[0.04] p-4 transition duration-500 hover:-translate-y-0.5 hover:border-orange/50 md:grid-cols-[auto_1fr_auto]" href={trace.href}>
+                <span class={`chip ${trace.tone === "pass" ? "chip-pass" : "chip-fail"}`}>{trace.status}</span>
+                <span>
+                  <b class="block text-sm text-white">{trace.title}</b>
+                  <span class="font-mono text-[11px] text-white/50">{trace.project} / {trace.id}</span>
+                </span>
+                <span class="grid grid-cols-2 gap-3 text-right font-mono text-[11px] text-white/60">
+                  <span><b class="block text-white">{trace.checks}</b> checks</span>
+                  <span><b class="block text-white">{trace.tools}</b> tools</span>
+                </span>
+              </a>
+            ))}
+          </div>
+        </section>
+      </section>
+
+      <section class="mx-auto grid w-full max-w-[1160px] gap-8 border-t border-line py-14 lg:grid-cols-[1fr_1fr]">
+        <div>
+          <p class="kicker">Reproduce locally</p>
+          <h2 class="display-title mb-5 text-[clamp(38px,5vw,72px)] leading-[0.94]">
+            The claims are commands.
+          </h2>
+          <p class="body-copy">
+            The website proof links point at source-controlled traces. The commands below are the exact checks behind the release notes.
+          </p>
+        </div>
+        <div class="light-panel overflow-hidden p-0">
+          {commands.map((command) => (
+            <code class="block border-b border-line px-5 py-4 font-mono text-xs text-ink last:border-b-0">{command}</code>
+          ))}
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

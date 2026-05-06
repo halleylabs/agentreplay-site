@@ -1,0 +1,23 @@
+---
+const links = [
+  { href: "#workflow", label: "Workflow" },
+  { href: "#proof", label: "Proof" },
+  { href: "#developers", label: "Developers" }
+];
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+---
+
+<header class="fixed left-1/2 top-5 z-30 flex min-h-[54px] w-[min(calc(100%-32px),860px)] -translate-x-1/2 items-center gap-5 rounded-full border border-ink/10 bg-porcelain/80 px-3 py-2 shadow-soft backdrop-blur-xl">
+  <a class="mr-auto flex items-center gap-2 text-sm font-extrabold" href={`${base}#top`} aria-label="AgentReplay home">
+    <span class="grid size-[23px] rotate-[-12deg] place-items-center rounded-lg bg-orange text-[13px] font-black text-white">A</span>
+    <span>AgentReplay</span>
+  </a>
+  <nav class="hidden items-center gap-5 text-[13px] font-bold text-muted md:flex" aria-label="Sections">
+    {links.map((link) => <a class="transition duration-500 ease-mass hover:text-orange" href={link.href}>{link.label}</a>)}
+  </nav>
+  <a class="rounded-full bg-ink px-5 py-2.5 text-[13px] font-extrabold text-white transition duration-500 ease-mass hover:-translate-y-0.5" href={`${base}console/`}>
+    Console
+  </a>
+</header>

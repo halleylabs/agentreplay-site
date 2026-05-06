@@ -1,0 +1,15 @@
+---
+export interface Props {
+  variant?: "primary" | "secondary";
+  href: string;
+  label: string;
+}
+
+const { variant = "primary", href, label } = Astro.props;
+const variantClass = variant === "primary" ? "pill-button-primary" : "pill-button-secondary";
+---
+
+<a class={`pill-button group ${variantClass}`} href={href}>
+  <span>{label}</span>
+  <span class="button-orb">→</span>
+</a>

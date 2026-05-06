@@ -1,0 +1,375 @@
+---
+import "../styles/global.css";
+import Nav from "../components/Nav.astro";
+import Button from "../components/Ui.astro";
+import HeroConsole from "../components/HeroConsole.astro";
+import ProofConsole from "../components/ProofConsole.astro";
+import CodeWindow from "../components/CodeWindow.astro";
+import DitherField from "../components/backgrounds/DitherField.jsx";
+import AsciiTrace from "../components/backgrounds/AsciiTrace.jsx";
+import {
+  siGithub,
+  siGmail,
+  siHubspot,
+  siOpenapiinitiative,
+  siPostgresql,
+  siStripe
+} from "simple-icons";
+
+const incidents = [
+  {
+    className: "right-5 top-3 -rotate-[5deg]",
+    badge: "unreproducible",
+    title: "Wrong refund",
+    rows: [["Tool", "stripe.refund"], ["Target", "in_original"], ["State", "changed"]]
+  },
+  {
+    className: "right-[150px] top-[170px] rotate-[4deg]",
+    badge: "side effect",
+    title: "Email sent",
+    rows: [["Tool", "gmail.send"], ["Approval", "missing"], ["Action", "delivered"]]
+  },
+  {
+    className: "bottom-3 left-3 -rotate-[2deg]",
+    badge: "missed approval",
+    title: "CRM drift",
+    rows: [["System", "HubSpot"], ["Order", "too early"], ["Replay", "missing"]]
+  }
+];
+
+const processSteps = [
+  ["1", "Freeze", "Capture the run", "agentreplay freeze"],
+  ["2", "Diff", "Compare side effects", "agentreplay diff"],
+  ["3", "Gate", "Block regressions", "agentreplay gate"]
+];
+
+const useCases = [
+  { key: "billing", icon: "$", title: "Billing Ops", label: "refund gate" },
+  { key: "support", icon: "✉", title: "Support Automation", label: "draft approval" },
+  { key: "platform", icon: "{ }", title: "AI Platform", label: "CI release gate" },
+  { key: "agency", icon: "∴", title: "Agent Agencies", label: "client proof bundle" }
+];
+
+const integrations = [
+  { label: "Stripe", pos: "left-1/2 top-0 -translate-x-1/2", icon: siStripe.path, color: "#635BFF" },
+  { label: "Gmail", pos: "left-[8%] top-[22%]", icon: siGmail.path, color: "#EA4335" },
+  { label: "HubSpot", pos: "right-[8%] top-[22%]", icon: siHubspot.path, color: "#FF5C35" },
+  { label: "GitHub", pos: "left-[2%] top-[52%]", icon: siGithub.path, color: "#181717" },
+  { label: "Postgres", pos: "right-[2%] top-[52%]", icon: siPostgresql.path, color: "#4169E1" },
+  { label: "Slack", pos: "bottom-[3%] left-[10%] md:left-[20%]", icon: null, color: "#4A154B" },
+  { label: "OpenAPI", pos: "bottom-[3%] right-[8%] md:right-[18%]", icon: siOpenapiinitiative.path, color: "#6BA539" }
+];
+
+const repoUrl = "https://github.com/anzal1/agentreplay";
+const claimsUrl = `${repoUrl}/blob/main/docs/research/CLAIMS_TESTED.md`;
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const consoleUrl = `${base}console/`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AgentReplay — Freeze. Diff. Gate.</title>
+    <meta
+      name="description"
+      content="AgentReplay turns AI-agent production failures into deterministic side-effect regression tests."
+    />
+    <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:opsz@9..40&family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="grain"></div>
+    <Nav />
+
+    <main id="top" class="relative z-10">
+      <section class="site-section hero-section grid min-h-[100dvh] items-center pt-32">
+        <DitherField client:load className="hero-dither" color="#ff6819" density={9} intensity={0.62} speed={0.5} />
+        <div class="hero-signal pointer-events-none absolute left-[28%] right-[-18%] top-[43%] hidden h-[260px] md:block lg:left-[31%] lg:top-[35%] lg:h-[330px]">
+          <svg viewBox="0 0 980 320" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="signalGradient" x1="0" x2="1" y1="0" y2="0">
+                <stop offset="0" stop-color="#ff6819" stop-opacity="0" />
+                <stop offset="0.22" stop-color="#ff6819" stop-opacity="0.48" />
+                <stop offset="0.58" stop-color="#ff6819" stop-opacity="0.9" />
+                <stop offset="1" stop-color="#ff6819" stop-opacity="0.1" />
+              </linearGradient>
+              <filter id="signalBlur" x="-12%" y="-60%" width="124%" height="220%">
+                <feGaussianBlur stdDeviation="9" />
+              </filter>
+            </defs>
+            <path class="signal-glow" d="M 0 165 C 120 118 210 105 322 129 C 445 156 505 253 638 255 C 780 257 841 181 980 174" />
+            <path class="signal-path" d="M 0 160 C 116 121 208 111 316 134 C 444 161 502 244 634 248 C 769 252 840 190 980 178" />
+            <path class="signal-thread signal-thread-a" d="M 16 142 C 145 125 239 126 333 151 C 452 184 516 236 631 235 C 765 233 836 196 963 198" />
+            <path class="signal-thread signal-thread-b" d="M 24 185 C 153 150 245 146 333 165 C 443 189 514 265 637 266 C 755 267 834 221 975 207" />
+          </svg>
+        </div>
+        <div class="section-inner relative z-10 grid max-w-[1280px] items-center gap-12 lg:grid-cols-[0.84fr_1.16fr] xl:gap-20">
+          <div class="reveal">
+            <p class="kicker">Agent side-effect regression</p>
+            <h1 class="display-title mb-6 max-w-[540px] text-[clamp(72px,10.5vw,146px)] leading-[0.79]">
+              Freeze. Diff. Gate.
+            </h1>
+            <p class="body-copy text-[16px]">Side-effect regression testing for AI agents.</p>
+            <div class="mt-8 flex flex-wrap gap-3">
+              <Button href={consoleUrl} label="Run Demo" />
+              <Button href="#proof" label="View Trace" variant="secondary" />
+            </div>
+          </div>
+          <div class="reveal reveal-delay-1">
+            <HeroConsole />
+          </div>
+        </div>
+      </section>
+
+      <section class="site-section">
+        <div class="problem-line pointer-events-none absolute right-[5%] top-[41%] hidden h-px w-[44%] rotate-[8deg] lg:block"></div>
+        <div class="section-inner grid items-center gap-12 lg:grid-cols-[0.86fr_1.14fr] xl:gap-20">
+          <div class="reveal">
+            <p class="kicker">The problem</p>
+            <h2 class="display-title mb-5 max-w-[680px] text-[clamp(44px,6vw,84px)] leading-[0.94]">
+              Production failures should not become folklore.
+            </h2>
+            <p class="body-copy">
+              Freeze the exact run, preserve the state boundary, and turn the incident into a gate.
+            </p>
+          </div>
+          <div class="reveal reveal-delay-1 relative grid min-h-[440px] gap-4 md:block">
+            {incidents.map((incident) => (
+              <article class={`light-panel w-full p-5 md:absolute md:w-[min(330px,48%)] ${incident.className}`}>
+                <span class="float-right rounded-full bg-failSoft px-2 py-1 text-[10px] font-extrabold text-fail">
+                  {incident.badge}
+                </span>
+                <h3 class="mb-4 text-lg font-extrabold">{incident.title}</h3>
+                <dl class="grid gap-2">
+                  {incident.rows.map(([term, detail]) => (
+                    <div class="grid grid-cols-[1fr_auto] gap-4 text-xs">
+                      <dt class="text-muted">{term}</dt>
+                      <dd class="m-0 font-bold text-ink">{detail}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="workflow" class="site-section">
+        <div class="section-inner">
+          <div class="reveal max-w-[760px]">
+            <p class="kicker">3 / 8 workflow</p>
+            <h2 class="display-title mb-5 text-[clamp(44px,6vw,84px)] leading-[0.94]">
+              A release gate built from real incidents.
+            </h2>
+            <p class="body-copy">
+              Capture the production run, compare the candidate, and block regressions before release.
+            </p>
+          </div>
+          <div class="reveal reveal-delay-1 relative mt-14 grid gap-6 pt-8 md:grid-cols-3">
+            <div class="absolute left-[4%] right-[4%] top-[84px] hidden h-[3px] bg-gradient-to-r from-orange via-orange/25 to-orange shadow-[0_0_22px_rgba(255,104,25,0.34)] md:block"></div>
+            {processSteps.map(([index, title, copy, command]) => (
+              <article class="light-panel relative min-h-[230px] p-7">
+                <span class="mb-9 grid size-11 place-items-center rounded-full bg-ink font-black text-white shadow-[0_0_0_6px_#F7F4EF,0_0_0_7px_rgba(255,104,25,0.35)]">
+                  {index}
+                </span>
+                <h3 class="text-xl font-extrabold">{title}</h3>
+                <p class="mb-7 text-muted">{copy}</p>
+                <code class="block w-fit max-w-full overflow-auto rounded-md bg-graphite px-3 py-2 font-mono text-xs text-[#FFD1BC]">
+                  {command}
+                </code>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="proof" class="site-section proof-section bg-gradient-to-b from-ink/[0.03] to-porcelain/50">
+        <DitherField client:load className="proof-dither" color="#10100f" density={11} intensity={0.28} speed={0.32} fade="linear" />
+        <div class="section-inner grid items-center gap-12 lg:grid-cols-[1.45fr_0.55fr] xl:gap-20">
+          <div class="reveal order-2 lg:order-1">
+            <ProofConsole />
+          </div>
+          <div class="reveal reveal-delay-1 order-1 lg:order-2">
+            <p class="kicker">Section 4 / 8</p>
+            <h2 class="display-title mb-5 text-[clamp(44px,6vw,84px)] leading-[0.94]">
+              The incident becomes the test.
+            </h2>
+            <p class="body-copy">
+              Replay the bad run, compare the candidate, and block the regression before release.
+            </p>
+            <div class="mt-8">
+              <Button href={consoleUrl} label="Inspect proof" />
+            </div>
+            <div class="mt-10 grid gap-3">
+              <span class="flex items-baseline gap-3 text-xs text-muted"><b class="font-serif text-4xl font-normal text-ink">3/6</b> failed checks</span>
+              <span class="flex items-baseline gap-3 text-xs text-muted"><b class="font-serif text-4xl font-normal text-ink">2</b> changes detected</span>
+              <span class="flex items-baseline gap-3 text-xs text-muted"><b class="font-serif text-4xl font-normal text-ink">6/6</b> passing checks</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="site-section">
+        <div class="section-inner">
+          <div class="grid items-center gap-12 lg:grid-cols-[0.56fr_1fr] xl:gap-20">
+            <div class="reveal">
+              <p class="kicker">5 / 8</p>
+              <h2 class="display-title mb-5 text-[clamp(44px,6vw,84px)] leading-[0.94]">
+                Wrap the tools your agents already use.
+              </h2>
+              <p class="body-copy">
+                Record inputs, responses, approvals, and side effects without replacing your agent framework.
+              </p>
+            </div>
+            <div class="reveal reveal-delay-1 relative min-h-[520px] lg:min-h-[440px]">
+              <svg class="integration-field pointer-events-none absolute inset-[4%] h-[92%] w-[92%]" viewBox="0 0 760 470" aria-hidden="true">
+                <path class="network-path" d="M380 236 C265 170 185 168 92 236" />
+                <path class="network-path network-path-soft" d="M380 236 C492 166 579 168 670 236" />
+                <path class="network-path network-path-soft" d="M380 236 C326 336 235 368 128 360" />
+                <path class="network-path" d="M380 236 C436 335 525 369 640 360" />
+                <path class="network-path network-path-faint" d="M380 236 C382 132 382 84 380 40" />
+                <ellipse cx="380" cy="236" rx="184" ry="112" fill="none" stroke="rgba(255,104,25,0.14)" />
+                <ellipse cx="380" cy="236" rx="270" ry="164" fill="none" stroke="rgba(255,104,25,0.09)" />
+              </svg>
+              <div class="hub-card absolute left-1/2 top-1/2 grid min-h-[98px] min-w-[142px] -translate-x-1/2 -translate-y-1/2 place-items-center p-3 text-center text-sm font-extrabold text-orange">
+                AgentReplay<br />Harness
+              </div>
+              {integrations.map((brand) => (
+                <div class={`integration-node absolute flex min-h-[62px] min-w-[108px] items-center gap-3 p-3 text-sm font-extrabold ${brand.pos}`} style={`--brand:${brand.color}`}>
+                  <span class="brand-glyph" aria-hidden="true">
+                    {brand.icon ? (
+                      <svg viewBox="0 0 24 24" role="img">
+                        <path d={brand.icon}></path>
+                      </svg>
+                    ) : (
+                      <span class="slack-mark">
+                        <i></i><i></i><i></i><i></i>
+                      </span>
+                    )}
+                  </span>
+                  <span class="brand-label">{brand.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <code class="reveal reveal-delay-2 mx-auto mt-8 block w-full rounded-lg bg-graphite px-5 py-4 font-mono text-xs text-[#FFD1BC] shadow-dark lg:w-[min(820px,100%)]">
+            harness.wrapTool('stripe.refund', refundCustomer)
+          </code>
+        </div>
+      </section>
+
+      <section class="site-section">
+        <div class="section-inner grid items-center gap-12 lg:grid-cols-[0.46fr_1fr] xl:gap-20">
+          <div class="reveal">
+            <p class="kicker">6 / 8</p>
+            <h2 class="display-title mb-5 text-[clamp(44px,6vw,84px)] leading-[0.94]">
+              Built for agents that act.
+            </h2>
+            <p class="body-copy">
+              Billing, support, RevOps, and platform teams need proof before the next release.
+            </p>
+          </div>
+          <div class="reveal reveal-delay-1 grid gap-4 md:grid-cols-[1.08fr_0.92fr]">
+            {useCases.map((card) => (
+              <article class={`light-panel p-5 ${card.key === "billing" ? "md:row-span-2 md:min-h-[360px]" : ""} ${card.key === "agency" ? "md:col-span-2" : ""}`}>
+                <span class="mb-4 grid size-9 place-items-center rounded-xl bg-orangeSoft font-black text-orange">
+                  {card.icon}
+                </span>
+                <h3 class="text-xl font-extrabold">{card.title}</h3>
+                <p class="text-sm text-muted">{card.label}</p>
+                {card.key === "billing" && (
+                  <div class="mt-8 grid grid-cols-[1fr_auto] gap-3 border-t border-line pt-4 font-mono text-[11px] text-muted">
+                    <span>invoice target</span><b class="text-pass">PASS</b>
+                    <span>amount check</span><b class="text-pass">PASS</b>
+                    <span>email action</span><b class="text-fail">FIXED</b>
+                  </div>
+                )}
+                {card.key === "support" && (
+                  <div class="mt-6 flex gap-2">
+                    <span class="rounded-full bg-passSoft px-3 py-2 text-[11px] font-extrabold text-pass">Approve</span>
+                    <span class="rounded-full bg-failSoft px-3 py-2 text-[11px] font-extrabold text-fail">Reject</span>
+                  </div>
+                )}
+                {card.key === "platform" && (
+                  <div class="mt-7 h-2 overflow-hidden rounded-full bg-line">
+                    <span class="block h-full w-3/4 rounded-full bg-gradient-to-r from-orange to-pass"></span>
+                  </div>
+                )}
+                {card.key === "agency" && (
+                  <div class="mt-5 grid gap-0 font-mono text-[11px] text-muted">
+                    <div class="grid grid-cols-[1fr_0.8fr_auto] gap-3 border-t border-line py-2"><span>Client</span><span>Status</span><span>Tests</span></div>
+                    <div class="grid grid-cols-[1fr_0.8fr_auto] gap-3 border-t border-line py-2"><span>Northwind</span><b class="text-pass">delivered</b><span>21/24</span></div>
+                    <div class="grid grid-cols-[1fr_0.8fr_auto] gap-3 border-t border-line py-2"><span>Atlas</span><b class="text-pass">reviewed</b><span>18/18</span></div>
+                  </div>
+                )}
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="developers" class="site-section">
+        <div class="section-inner grid items-center gap-12 lg:grid-cols-[1.08fr_0.92fr] xl:gap-20">
+          <div class="reveal order-2 lg:order-1">
+            <CodeWindow />
+          </div>
+          <div class="reveal reveal-delay-1 order-1 lg:order-2">
+            <p class="kicker">Developer experience</p>
+            <h2 class="display-title mb-5 text-[clamp(44px,6vw,84px)] leading-[0.94]">
+              Drop it around the tools. Keep your agent.
+            </h2>
+            <p class="body-copy">
+              AgentReplay works beside your framework: OpenAI Agents, LangGraph, custom MCP servers, or your own loop.
+            </p>
+            <ul class="mt-8 grid gap-4 p-0">
+              {["No framework rewrite", "Deterministic gates", "Redaction by default", "CI-ready"].map((item) => (
+                <li class="flex items-center gap-3 border-b border-line pb-4 text-sm text-muted before:grid before:size-7 before:place-items-center before:rounded-lg before:bg-orangeSoft before:font-black before:text-orange before:content-['✓']">
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="site-section final-section grid min-h-[100dvh] items-center text-center">
+        <DitherField client:load className="final-dither" color="#ff6819" density={8} intensity={0.72} speed={0.38} />
+        <AsciiTrace client:load className="final-ascii" />
+        <div class="section-inner reveal relative z-10">
+          <div class="mb-20 inline-flex min-h-16 items-center gap-3 rounded-xl bg-graphite px-6 font-mono text-base font-extrabold text-[#4EE190] shadow-dark">
+            <span class="grid size-9 place-items-center rounded-full border border-[#4EE190]">✓</span>
+            PASSED 6/6
+          </div>
+          <h2 class="display-title mx-auto mb-5 max-w-[960px] text-[clamp(54px,7.5vw,112px)] leading-[0.94]">
+            Ship agents with evidence.
+          </h2>
+          <p class="body-copy mx-auto">Every side effect frozen. Every fix compared. Every release gated.</p>
+          <div class="mt-8 flex flex-wrap justify-center gap-3">
+            <Button href={consoleUrl} label="Start Freezing Traces" />
+            <Button href={claimsUrl} label="Read the Proof" variant="secondary" />
+          </div>
+          <footer class="mt-24 flex flex-col items-start gap-6 border-t border-line pt-7 md:flex-row md:items-center md:justify-between">
+            <span class="grid size-[23px] rotate-[-12deg] place-items-center rounded-lg bg-orange text-[13px] font-black text-white">A</span>
+            <nav class="flex flex-wrap gap-8 text-xs text-muted">
+              <a class="transition duration-500 ease-mass hover:text-orange" href={`${repoUrl}#readme`}>Docs</a>
+              <a class="transition duration-500 ease-mass hover:text-orange" href={repoUrl}>GitHub</a>
+              <a class="transition duration-500 ease-mass hover:text-orange" href={consoleUrl}>Demo</a>
+              <a class="transition duration-500 ease-mass hover:text-orange" href={`${repoUrl}/issues/new`}>Contact</a>
+            </nav>
+          </footer>
+        </div>
+      </section>
+    </main>
+
+    <script src="../scripts/animations.js"></script>
+  </body>
+</html>

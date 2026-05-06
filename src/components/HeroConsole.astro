@@ -1,0 +1,79 @@
+<div class="product-stage relative z-10 w-full min-w-0">
+  <div class="console-shell">
+    <div class="console-status">
+      <div class="flex items-center gap-3 text-sm text-[#EEE9DD]">
+        <span class="status-dot"></span>
+        <span>Trace captured</span>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <span class="chip chip-fail">FAILED 3/6</span>
+        <span class="chip chip-pass">PASSED 6/6</span>
+      </div>
+    </div>
+
+    <div class="console-card console-timeline">
+      <div class="mb-8 flex items-center justify-between">
+        <p class="m-0 text-sm font-semibold text-[#EEE9DD]">Trace timeline</p>
+        <span class="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7D776F]">11 sec replay</span>
+      </div>
+      <div class="relative flex min-w-0 items-center justify-between gap-2 font-mono text-[10px] text-[#B9B4AC] sm:text-[11px]">
+        <span class="absolute left-4 right-4 top-[9px] h-px bg-[#EEE9DD]/20"></span>
+        {[
+          ["00:00", true],
+          ["00:02", false],
+          ["00:04", false],
+          ["00:07", false],
+          ["00:09", false],
+          ["00:11", false]
+        ].map(([time, active]) => (
+          <span class="relative z-10 grid justify-items-center gap-3">
+            <span class={active ? "timeline-node timeline-node-active" : "timeline-node"}></span>
+            <span>{time}</span>
+          </span>
+        ))}
+      </div>
+    </div>
+
+    <div class="grid min-w-0 gap-3 md:grid-cols-[0.78fr_1.22fr]">
+      <div class="console-card min-h-[250px]">
+        <h3 class="mb-4 text-sm font-bold text-white">Tool calls</h3>
+        {[
+          ["search_orders", "200 OK", "text-[#4EE190]"],
+          ["get_customer", "200 OK", "text-[#4EE190]"],
+          ["create_refund", "500 ERR", "text-[#FF6B61]"],
+          ["send_email", "200 OK", "text-[#4EE190]"],
+          ["update_crm", "500 ERR", "text-[#FF6B61]"],
+          ["log_event", "200 OK", "text-[#4EE190]"]
+        ].map(([tool, status, color]) => (
+          <div class="grid grid-cols-[1fr_auto] gap-4 border-t border-white/10 py-3 font-mono text-[11px] text-[#B9B4AC]">
+            <span class="truncate">{tool}</span><b class={color}>{status}</b>
+          </div>
+        ))}
+      </div>
+
+      <div class="console-card min-h-[250px]">
+        <h3 class="mb-4 text-sm font-bold text-white">Side-effect diff</h3>
+        <div class="grid min-w-0 grid-cols-[0.86fr_1fr_auto] gap-3 border-y border-white/10 py-3 text-[10px] text-[#D6D2C9] sm:grid-cols-[0.8fr_0.8fr_1fr_auto] sm:gap-4 sm:text-[11px]">
+          <span>Resource</span>
+          <span class="hidden sm:block">Expected</span>
+          <span>Actual</span>
+          <span>Diff</span>
+        </div>
+        {[
+          ["refunds", "-", "id: rf_123", "+ CREATED"],
+          ["emails", "-", "to: customer@email.com", "+ SENT"],
+          ["orders", "status: open", "status: refunded", "CHANGED"],
+          ["crm.contacts", "last_contacted: -", "last_contacted: now", "CHANGED"],
+          ["audit_logs", "-", "+1 entry", "+ CREATED"]
+        ].map(([resource, expected, actual, diff]) => (
+          <div class="grid min-w-0 grid-cols-[0.86fr_1fr_auto] gap-3 border-b border-white/10 py-3 font-mono text-[10px] text-[#B9B4AC] sm:grid-cols-[0.8fr_0.8fr_1fr_auto] sm:gap-4 sm:text-[11px]">
+            <span class="truncate">{resource}</span>
+            <span class="hidden truncate sm:block">{expected}</span>
+            <span class="truncate">{actual}</span>
+            <b class="text-[#FF6B61]">{diff}</b>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>

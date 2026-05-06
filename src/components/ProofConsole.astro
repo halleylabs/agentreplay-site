@@ -1,0 +1,39 @@
+<div class="dark-panel p-4">
+  <div class="grid gap-3 md:grid-cols-2">
+    {[
+      { title: "Bad trace", chip: "FAILED 3/6", chipClass: "chip-fail", rows: [["No PII in logs", "fail"], ["Email sent", "fail"], ["Refund within 24h", "pass"]] },
+      { title: "Fixed trace", chip: "PASSED 6/6", chipClass: "chip-pass", rows: [["No PII in logs", "pass"], ["Email drafted", "pass"], ["Refund within 24h", "pass"]] }
+    ].map((panel) => (
+      <article class="rounded-lg bg-graphite2 p-4">
+        <div class="flex items-center justify-between gap-3">
+          <h3 class="text-xs font-bold text-white">{panel.title}</h3>
+          <span class={`chip ${panel.chipClass}`}>{panel.chip}</span>
+        </div>
+        <ul class="mt-4 grid gap-2 p-0 font-mono text-[11px] text-[#BFB9B0]">
+          {panel.rows.map(([label, state]) => (
+            <li class={state === "pass" ? "text-[#BFB9B0] before:mr-2 before:text-[#4EE190] before:content-['○']" : "text-[#BFB9B0] before:mr-2 before:text-[#FF6B61] before:content-['○']"}>
+              {label}
+            </li>
+          ))}
+        </ul>
+      </article>
+    ))}
+  </div>
+  <div class="mt-3 overflow-hidden rounded-lg bg-[#171A1C] font-mono text-[11px]">
+    <div class="grid grid-cols-[1.1fr_1.1fr_0.55fr] gap-3 border-b border-white/10 px-4 py-3 text-[10px] uppercase text-[#817B72]">
+      <span>Tool diff</span><span>Side-effect diff</span><span>Status</span>
+    </div>
+    {[
+      ["gmail.send → gmail.draft", "email side effect removed", "changed", true],
+      ["stripe.refund", "refund target changed", "verified", false],
+      ["hubspot.update", "order preserved", "pass", false]
+    ].map(([a, b, c, hot]) => (
+      <div class={`grid grid-cols-[1.1fr_1.1fr_0.55fr] gap-3 border-b border-white/10 px-4 py-3 text-[#BAB4AB] ${hot ? "bg-orange/10 shadow-[inset_4px_0_0_#FF6819]" : ""}`}>
+        <span>{a}</span><span>{b}</span><b class="text-[#FF9A62]">{c}</b>
+      </div>
+    ))}
+  </div>
+  <code class="mt-3 block w-fit max-w-full overflow-auto rounded-md bg-graphite px-3 py-2 font-mono text-xs text-[#FFD1BC]">
+    agentreplay diff bad_trace.json fixed_trace.json
+  </code>
+</div>
